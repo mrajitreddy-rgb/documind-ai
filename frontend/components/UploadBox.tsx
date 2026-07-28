@@ -4,12 +4,74 @@ import { useState } from "react";
 
 export default function UploadBox() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (event.target.files && event.target.files.length > 0) {
       setSelectedFile(event.target.files[0]);
+      setMessage("");
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    setLoading(true);
+    setMessage("");
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Server Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        setMessage(`❌ ${data.message}`);
+        return;
+      }
+
+      setMessage(
+`✅ Document analyzed successfully!
+
+📄 Filename:
+${data.filename}
+
+📑 Pages:
+${data.pages}
+
+📝 Characters:
+${data.text_length}
+
+📖 Preview:
+
+${data.preview}`
+      );
+
+    } catch (error) {
+      console.error("Upload Error:", error);
+
+      if (error instanceof Error) {
+        setMessage(`❌ ${error.message}`);
+      } else {
+        setMessage("❌ Unknown error occurred.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,16 +109,24 @@ export default function UploadBox() {
               Selected File:
             </p>
 
-            <p className="mt-2 text-white font-medium">
+            <p className="mt-2 font-medium text-white">
               {selectedFile.name}
             </p>
 
             <button
-              className="mt-6 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-500"
+              onClick={handleUpload}
+              disabled={loading}
+              className="mt-6 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-500 disabled:opacity-50"
             >
-              Analyze Document
+              {loading ? "Analyzing..." : "Analyze Document"}
             </button>
 
+          </div>
+        )}
+
+        {message && (
+          <div className="mt-8 whitespace-pre-wrap rounded-lg bg-slate-800 p-5 text-left text-green-400">
+            {message}
           </div>
         )}
 
