@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import UploadBox from "@/components/UploadBox";
 
 export default function Home() {
   return (
@@ -28,10 +29,13 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Upload Box */}
+        <UploadBox />
+
         {/* Features */}
         <section
           id="features"
-          className="mx-auto grid max-w-6xl gap-6 px-6 pb-24 md:grid-cols-3"
+          className="mx-auto grid max-w-6xl gap-6 px-6 py-24 md:grid-cols-3"
         >
           <div className="rounded-2xl bg-slate-900 p-6 shadow-lg">
             <h2 className="text-xl font-bold">Invoice Extraction</h2>
