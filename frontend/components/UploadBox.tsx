@@ -28,6 +28,7 @@ export default function UploadBox() {
   const [exporting, setExporting] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -177,6 +178,19 @@ export default function UploadBox() {
       setExporting(false);
     }
   };
+  const filteredInvoices =
+    result?.invoices.filter((invoice) => {
+      const search = searchTerm.toLowerCase();
+
+      return (
+        invoice.invoice_number.toLowerCase().includes(search) ||
+        invoice.invoice_date.toLowerCase().includes(search) ||
+        invoice.dealer.toLowerCase().includes(search) ||
+        invoice.customer.toLowerCase().includes(search) ||
+        invoice.amount.toLowerCase().includes(search) ||
+        String(invoice.page ?? "").includes(search)
+      );
+    }) ?? [];
 
   return (
     <section className="mx-auto mt-16 max-w-7xl px-6">
@@ -337,7 +351,7 @@ export default function UploadBox() {
 
             <div className="rounded-xl bg-slate-800 p-6">
 
-              <div className="mb-6 flex items-center justify-between">
+              <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
                 <h3 className="text-2xl font-bold text-green-400">
                   📋 Extracted Invoices ({result.invoice_count})
@@ -361,12 +375,19 @@ export default function UploadBox() {
                 >
                   {exporting ? "Exporting..." : "📄 Export CSV"}
                 </button>
+                <input
+                  type="text"
+                  placeholder="🔍 Search invoices..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-2 text-white placeholder:text-slate-400 md:max-w-sm"
+                />
 
               </div>
 
             </div>
 
-              {result.invoices.length === 0 ? (
+              {filteredInvoices.length === 0 ? (
 
                 <div className="rounded-lg bg-slate-900 p-6 text-center text-slate-400">
                   No invoices were detected.
@@ -416,7 +437,7 @@ export default function UploadBox() {
 
                     <tbody>
 
-                      {result.invoices.map((invoice, index) => (
+                      {filteredInvoices.map((invoice, index) => (
 
                         <tr
                           key={`${invoice.invoice_number}-${index}`}
