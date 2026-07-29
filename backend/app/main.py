@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.routes.upload import router as upload_router
+from app.routes.export import router as export_router
 
 app = FastAPI(
     title="DocuMind AI API",
@@ -19,11 +21,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def home():
     return {
         "message": "Welcome to DocuMind AI Backend"
     }
+
 
 @app.get("/health")
 def health():
@@ -31,8 +35,17 @@ def health():
         "status": "healthy"
     }
 
+
+# Upload API
 app.include_router(
     upload_router,
     prefix="/api",
     tags=["Upload"]
+)
+
+# Export API
+app.include_router(
+    export_router,
+    prefix="/api/export",
+    tags=["Export"]
 )

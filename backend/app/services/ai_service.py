@@ -78,20 +78,31 @@ def extract_invoices_from_batch(batch_text: str):
     print("Sending batch to Gemini...")
 
     prompt = f"""
-You are an expert invoice extraction AI.
+You are an expert AI specialized in extracting invoice information from PDF documents.
 
-The following text comes from MULTIPLE PDF PAGES.
+The text below comes from multiple PDF pages.
 
-Each page begins with:
+Each page starts with a marker exactly like:
 
 ==================== PAGE X ====================
 
-There may be:
+where X is the page number.
+
+A PDF may contain:
 - No invoices
 - One invoice
 - Multiple invoices
 
-Extract EVERY invoice you can find.
+Your task is to detect EVERY invoice independently.
+
+For EACH invoice:
+
+1. Identify the invoice number.
+2. Identify the invoice date.
+3. Identify the dealer/company issuing the invoice.
+4. Identify the customer, vehicle owner, or billed party if present.
+5. Identify the final invoice amount.
+6. Determine the EXACT page number from the nearest PAGE marker.
 
 Return ONLY valid JSON.
 
@@ -101,7 +112,7 @@ If no invoices exist:
   "invoices": []
 }}
 
-Otherwise:
+Otherwise return:
 
 {{
   "invoices": [
@@ -110,18 +121,47 @@ Otherwise:
       "invoice_date": "",
       "dealer": "",
       "customer": "",
-      "amount": ""
+      "amount": "",
+      "page": 1
     }}
   ]
 }}
 
-Rules:
+Extraction Rules
+
+- invoice_number
+  Copy exactly as printed.
+
+- invoice_date
+  Copy exactly as printed.
+
+- dealer
+  Extract the company or dealer issuing the invoice.
+
+- customer
+  Extract the customer name, vehicle owner, or billed party.
+  If the customer spans multiple lines, combine them into one string.
+  Do NOT copy a customer from another invoice.
+  Leave this field empty ONLY if no customer exists for that invoice.
+
+- amount
+  Extract the FINAL payable invoice amount.
+  Ignore subtotal, GST, tax, discount and intermediate values.
+
+- page
+  Return the exact page number where the invoice begins.
+  The value MUST be an integer.
+
+General Rules
+
+- Extract EVERY invoice.
 - Return JSON only.
 - No markdown.
 - No explanations.
-- Preserve values exactly.
-- Leave unknown values empty.
-- Ignore duplicate invoices if they appear on consecutive pages.
+- Preserve text exactly.
+- Ignore duplicate invoices that appear on consecutive pages.
+- Never invent information.
+- Leave fields empty instead of guessing.
 
 PDF Text:
 
@@ -148,6 +188,9 @@ PDF Text:
         if "invoices" not in data:
             data["invoices"] = []
 
+        for invoice in data["invoices"]:
+            if "page" not in invoice:
+                invoice["page"] = None
         print(f"Found {len(data['invoices'])} invoice(s).")
 
         return data

@@ -8,7 +8,7 @@ interface Invoice {
   dealer: string;
   customer: string;
   amount: string;
-  pages: number[];
+  page: number | null;
 }
 
 interface UploadResult {
@@ -25,6 +25,7 @@ interface UploadResult {
 export default function UploadBox() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState("");
 
@@ -37,7 +38,55 @@ export default function UploadBox() {
       setError("");
     }
   };
+  const handleExcelExport = async () => {
+  if (!result) return;
 
+  try {
+    setExporting(true);
+
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/export/excel",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          invoices: result.invoices,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to export Excel.");
+    }
+
+    const blob = await response.blob();
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "DocuMind_Invoices.xlsx";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    if (err instanceof Error) {
+      alert(err.message);
+    } else {
+      alert("Failed to export Excel.");
+    }
+  } finally {
+    setExporting(false);
+  }
+};
   const handleUpload = async () => {
     if (!selectedFile) return;
 
@@ -237,9 +286,21 @@ export default function UploadBox() {
 
             <div className="rounded-xl bg-slate-800 p-6">
 
-              <h3 className="mb-6 text-2xl font-bold text-green-400">
-                📋 Extracted Invoices ({result.invoice_count})
-              </h3>
+              <div className="mb-6 flex items-center justify-between">
+
+                <h3 className="text-2xl font-bold text-green-400">
+                  📋 Extracted Invoices ({result.invoice_count})
+                </h3>
+
+                <button
+                  onClick={handleExcelExport}
+                  disabled={exporting}
+                  className="rounded-lg bg-emerald-600 px-5 py-2 font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+                >
+                  {exporting ? "Exporting..." : "📊 Export Excel"}
+                </button>
+
+            </div>
 
               {result.invoices.length === 0 ? (
 
@@ -282,7 +343,7 @@ export default function UploadBox() {
                         </th>
 
                         <th className="border border-slate-600 px-4 py-3 text-center text-white">
-                          Pages
+                          Page
                         </th>
 
                       </tr>
@@ -322,12 +383,8 @@ export default function UploadBox() {
                             {invoice.amount ? `₹ ${invoice.amount}` : "-"}
                           </td>
 
-                          <td className="border border-slate-700 px-4 py-3 text-center">
-                            {invoice.pages.length === 0
-                              ? "-"
-                              : invoice.pages.length > 1
-                                ? `${invoice.pages[0]} - ${invoice.pages[invoice.pages.length - 1]}`
-                                : invoice.pages[0]}
+                          <td className="border border-slate-700 px-4 py-3 text-center font-semibold text-cyan-300">
+                            {invoice.page ?? "-"}
                           </td>
 
                         </tr>

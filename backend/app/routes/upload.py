@@ -56,8 +56,9 @@ async def upload_document(file: UploadFile = File(...)):
 
             for invoice in extracted["invoices"]:
 
-                # Store which pages were processed in this batch
-                invoice["pages"] = batch["pages"]
+                # Ensure every invoice has a page field
+                if "page" not in invoice:
+                    invoice["page"] = None
 
                 all_invoices.append(invoice)
 
