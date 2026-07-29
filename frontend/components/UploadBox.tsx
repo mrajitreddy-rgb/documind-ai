@@ -127,6 +127,57 @@ export default function UploadBox() {
     }
   };
 
+  const handleCsvExport = async () => {
+    if (!result) return;
+
+    try {
+      setExporting(true);
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/export/csv",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            invoices: result.invoices,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to export CSV.");
+      }
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "DocuMind_Invoices.csv";
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert("Failed to export CSV.");
+      }
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <section className="mx-auto mt-16 max-w-7xl px-6">
 
@@ -292,13 +343,26 @@ export default function UploadBox() {
                   📋 Extracted Invoices ({result.invoice_count})
                 </h3>
 
+              <div className="flex gap-3">
+
                 <button
                   onClick={handleExcelExport}
-                  disabled={exporting}
+                  disabled={exporting || loading}
                   className="rounded-lg bg-emerald-600 px-5 py-2 font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
                 >
                   {exporting ? "Exporting..." : "📊 Export Excel"}
+                  
                 </button>
+
+                <button
+                  onClick={handleCsvExport}
+                  disabled={exporting || loading}
+                  className="rounded-lg bg-blue-600 px-5 py-2 font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
+                >
+                  {exporting ? "Exporting..." : "📄 Export CSV"}
+                </button>
+
+              </div>
 
             </div>
 
