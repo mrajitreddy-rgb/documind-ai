@@ -2,10 +2,30 @@
 
 import { useState } from "react";
 
+interface Invoice {
+  invoice_number: string;
+  invoice_date: string;
+  dealer: string;
+  customer: string;
+  amount: string;
+  pages: number[];
+}
+
+interface UploadResult {
+  success: boolean;
+  filename: string;
+  pages: number;
+  text_length: number;
+  preview: string;
+  batch_count: number;
+  invoice_count: number;
+  invoices: Invoice[];
+}
+
 export default function UploadBox() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState("");
 
   const handleFileChange = (
@@ -40,6 +60,12 @@ export default function UploadBox() {
         throw new Error(data.detail || "Upload failed");
       }
 
+      if (!data.success) {
+        setResult(null);
+        setError(data.error || "Analysis failed.");
+        return;
+      }
+
       setResult(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -53,7 +79,8 @@ export default function UploadBox() {
   };
 
   return (
-    <section className="mx-auto mt-16 max-w-4xl px-6">
+    <section className="mx-auto mt-16 max-w-7xl px-6">
+
       <div className="rounded-3xl border-2 border-dashed border-cyan-500 bg-slate-900 p-10">
 
         <h2 className="text-center text-3xl font-bold text-white">
@@ -61,10 +88,11 @@ export default function UploadBox() {
         </h2>
 
         <p className="mt-3 text-center text-slate-400">
-          Select an invoice, receipt or contract in PDF format.
+          Upload a PDF and extract invoice information using AI.
         </p>
 
         <div className="mt-8 text-center">
+
           <input
             id="pdf-upload"
             type="file"
@@ -79,10 +107,13 @@ export default function UploadBox() {
           >
             Choose PDF
           </label>
+
         </div>
 
         {selectedFile && (
+
           <div className="mt-6 text-center">
+
             <p className="text-green-400">
               Selected File
             </p>
@@ -96,89 +127,229 @@ export default function UploadBox() {
               disabled={loading}
               className="mt-6 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-500 disabled:opacity-50"
             >
-              {loading ? "Analyzing..." : "Analyze Document"}
+              {loading ? "Analyzing PDF..." : "Analyze Document"}
             </button>
+
           </div>
+
         )}
 
         {error && (
+
           <div className="mt-8 rounded-lg bg-red-900 p-4 text-red-200">
             {error}
           </div>
+
         )}
 
         {result && (
-          <div className="mt-8 space-y-6">
+
+          <div className="mt-10 space-y-8">
+
+            {/* PDF Information */}
 
             <div className="rounded-xl bg-slate-800 p-6">
-              <h3 className="mb-4 text-xl font-bold text-cyan-400">
+
+              <h3 className="mb-4 text-2xl font-bold text-cyan-400">
                 📄 PDF Information
               </h3>
 
-              <p><strong>Filename:</strong> {result.filename}</p>
-              <p><strong>Pages:</strong> {result.pages}</p>
-              <p><strong>Characters:</strong> {result.text_length}</p>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 
-              <div className="mt-4">
-                <strong>Preview</strong>
+                <div>
+                  <span className="font-bold text-white">
+                    Filename
+                  </span>
 
-                <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded bg-slate-900 p-3 text-sm text-green-300">
+                  <p className="text-slate-300">
+                    {result.filename}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-bold text-white">
+                    Characters
+                  </span>
+
+                  <p className="text-slate-300">
+                    {result.text_length.toLocaleString()}
+                  </p>
+                </div>
+
+              </div>
+
+              <div className="mt-6">
+
+                <span className="font-bold text-white">
+                  Preview
+                </span>
+
+                <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap rounded-lg bg-slate-950 p-4 text-sm text-green-300">
                   {result.preview}
                 </pre>
+
               </div>
+
             </div>
 
+            {/* Statistics */}
+
+            <div className="grid gap-6 md:grid-cols-3">
+
+              <div className="rounded-xl bg-slate-800 p-6 text-center">
+
+                <h4 className="text-lg font-semibold text-cyan-400">
+                  Pages
+                </h4>
+
+                <p className="mt-3 text-4xl font-bold text-white">
+                  {result.pages}
+                </p>
+
+              </div>
+
+              <div className="rounded-xl bg-slate-800 p-6 text-center">
+
+                <h4 className="text-lg font-semibold text-green-400">
+                  Batches
+                </h4>
+
+                <p className="mt-3 text-4xl font-bold text-white">
+                  {result.batch_count}
+                </p>
+
+              </div>
+
+              <div className="rounded-xl bg-slate-800 p-6 text-center">
+
+                <h4 className="text-lg font-semibold text-yellow-400">
+                  Invoices Found
+                </h4>
+
+                <p className="mt-3 text-4xl font-bold text-white">
+                  {result.invoice_count}
+                </p>
+
+              </div>
+
+            </div>
+                        {/* Invoice Table */}
+
             <div className="rounded-xl bg-slate-800 p-6">
-              <h3 className="mb-4 text-xl font-bold text-green-400">
-                🤖 AI Extracted Information
+
+              <h3 className="mb-6 text-2xl font-bold text-green-400">
+                📋 Extracted Invoices ({result.invoice_count})
               </h3>
 
-              {result.structured_data?.error ? (
-                <div className="text-red-400">
-                  {result.structured_data.error}
+              {result.invoices.length === 0 ? (
+
+                <div className="rounded-lg bg-slate-900 p-6 text-center text-slate-400">
+                  No invoices were detected.
                 </div>
+
               ) : (
-                <div className="grid grid-cols-2 gap-4">
 
-                  <div>
-                    <span className="font-bold">Document Type</span>
-                    <p>{result.structured_data?.document_type}</p>
-                  </div>
+                <div className="overflow-x-auto">
 
-                  <div>
-                    <span className="font-bold">Invoice Number</span>
-                    <p>{result.structured_data?.invoice_number}</p>
-                  </div>
+                  <table className="min-w-full border border-slate-700">
 
-                  <div>
-                    <span className="font-bold">Invoice Date</span>
-                    <p>{result.structured_data?.invoice_date}</p>
-                  </div>
+                    <thead className="bg-slate-700">
 
-                  <div>
-                    <span className="font-bold">Dealer</span>
-                    <p>{result.structured_data?.dealer}</p>
-                  </div>
+                      <tr>
 
-                  <div>
-                    <span className="font-bold">Customer</span>
-                    <p>{result.structured_data?.customer}</p>
-                  </div>
+                        <th className="border border-slate-600 px-4 py-3 text-left text-white">
+                          #
+                        </th>
 
-                  <div>
-                    <span className="font-bold">Amount</span>
-                    <p>{result.structured_data?.amount}</p>
-                  </div>
+                        <th className="border border-slate-600 px-4 py-3 text-left text-white">
+                          Invoice Number
+                        </th>
+
+                        <th className="border border-slate-600 px-4 py-3 text-left text-white">
+                          Date
+                        </th>
+
+                        <th className="border border-slate-600 px-4 py-3 text-left text-white">
+                          Dealer
+                        </th>
+
+                        <th className="border border-slate-600 px-4 py-3 text-left text-white">
+                          Customer
+                        </th>
+
+                        <th className="border border-slate-600 px-4 py-3 text-right text-white">
+                          Amount
+                        </th>
+
+                        <th className="border border-slate-600 px-4 py-3 text-center text-white">
+                          Pages
+                        </th>
+
+                      </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                      {result.invoices.map((invoice, index) => (
+
+                        <tr
+                          key={`${invoice.invoice_number}-${index}`}
+                          className="hover:bg-slate-700"
+                        >
+
+                          <td className="border border-slate-700 px-4 py-3">
+                            {index + 1}
+                          </td>
+
+                          <td className="border border-slate-700 px-4 py-3 font-mono text-cyan-300">
+                            {invoice.invoice_number || "-"}
+                          </td>
+
+                          <td className="border border-slate-700 px-4 py-3">
+                            {invoice.invoice_date || "-"}
+                          </td>
+
+                          <td className="border border-slate-700 px-4 py-3">
+                            {invoice.dealer || "-"}
+                          </td>
+
+                          <td className="border border-slate-700 px-4 py-3">
+                            {invoice.customer || "-"}
+                          </td>
+
+                          <td className="border border-slate-700 px-4 py-3 text-right text-green-400 font-semibold">
+                            {invoice.amount ? `₹ ${invoice.amount}` : "-"}
+                          </td>
+
+                          <td className="border border-slate-700 px-4 py-3 text-center">
+                            {invoice.pages.length === 0
+                              ? "-"
+                              : invoice.pages.length > 1
+                                ? `${invoice.pages[0]} - ${invoice.pages[invoice.pages.length - 1]}`
+                                : invoice.pages[0]}
+                          </td>
+
+                        </tr>
+
+                      ))}
+
+                    </tbody>
+
+                  </table>
 
                 </div>
+
               )}
 
             </div>
 
           </div>
+
         )}
 
       </div>
+
     </section>
   );
 }

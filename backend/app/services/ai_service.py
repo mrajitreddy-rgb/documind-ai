@@ -21,7 +21,7 @@ client = genai.Client(
 )
 
 # -------------------------------------------------------
-# Keywords used to detect invoice pages
+# Invoice Keywords
 # -------------------------------------------------------
 
 INVOICE_KEYWORDS = [
@@ -42,13 +42,12 @@ INVOICE_KEYWORDS = [
 ]
 
 
-def looks_like_invoice(page_text: str) -> bool:
+def looks_like_invoice(text: str) -> bool:
     """
-    Quick filter before calling Gemini.
-    Saves API calls by skipping irrelevant pages.
+    Quick keyword filter to avoid unnecessary Gemini calls.
     """
 
-    text = page_text.lower()
+    text = text.lower()
 
     for keyword in INVOICE_KEYWORDS:
         if keyword in text:
@@ -57,82 +56,76 @@ def looks_like_invoice(page_text: str) -> bool:
     return False
 
 
-def extract_invoice_from_page(page_text: str):
+def extract_invoices_from_batch(batch_text: str):
     """
-    Extract invoice information from ONE PDF page.
+    Extract invoices from a batch of PDF pages.
     """
 
-    # -----------------------------------------
-    # Skip empty pages
-    # -----------------------------------------
-
-    if not page_text.strip():
-        print("Skipping empty page.")
+    if not batch_text.strip():
+        print("Skipping empty batch.")
 
         return {
             "invoices": []
         }
 
-    # -----------------------------------------
-    # Skip obvious non-invoice pages
-    # -----------------------------------------
-
-    if not looks_like_invoice(page_text):
-        print("Skipping non-invoice page.")
+    if not looks_like_invoice(batch_text):
+        print("Skipping non-invoice batch.")
 
         return {
             "invoices": []
         }
 
-    print("Sending page to Gemini...")
+    print("Sending batch to Gemini...")
 
     prompt = f"""
-You are an expert AI invoice extraction assistant.
+You are an expert invoice extraction AI.
 
-The following text is extracted from ONE PAGE of a PDF.
+The following text comes from MULTIPLE PDF PAGES.
 
-A page may contain:
+Each page begins with:
 
-- No invoice
+==================== PAGE X ====================
+
+There may be:
+- No invoices
 - One invoice
 - Multiple invoices
 
-Extract ALL invoices found.
+Extract EVERY invoice you can find.
 
 Return ONLY valid JSON.
 
-If there are no invoices return exactly:
+If no invoices exist:
 
 {{
-    "invoices":[]
+  "invoices": []
 }}
 
-Otherwise return:
+Otherwise:
 
 {{
-    "invoices":[
-        {{
-            "invoice_number":"",
-            "invoice_date":"",
-            "dealer":"",
-            "customer":"",
-            "amount":""
-        }}
-    ]
+  "invoices": [
+    {{
+      "invoice_number": "",
+      "invoice_date": "",
+      "dealer": "",
+      "customer": "",
+      "amount": ""
+    }}
+  ]
 }}
 
 Rules:
-
-- No markdown
-- No explanation
-- No comments
+- Return JSON only.
+- No markdown.
+- No explanations.
 - Preserve values exactly.
-- Do not guess missing values.
-- Leave unknown fields empty.
+- Leave unknown values empty.
+- Ignore duplicate invoices if they appear on consecutive pages.
 
-Page Text:
+PDF Text:
 
-{page_text}
+{batch_text}
 """
 
     try:
@@ -161,8 +154,7 @@ Page Text:
 
     except json.JSONDecodeError:
 
-        print("Gemini returned invalid JSON.")
-
+        print("Invalid JSON returned by Gemini.")
         print(response.text)
 
         return {
@@ -174,6 +166,17 @@ Page Text:
         print("Gemini Error:")
         print(e)
 
+        error_message = str(e)
+
+        if "RESOURCE_EXHAUSTED" in error_message or "429" in error_message:
+            return {
+                "success": False,
+                "error": "Gemini API quota exceeded. Please try again later.",
+                "invoices": []
+            }
+
         return {
+            "success": False,
+            "error": error_message,
             "invoices": []
         }
