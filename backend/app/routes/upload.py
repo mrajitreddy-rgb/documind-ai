@@ -1,7 +1,9 @@
 from fastapi import APIRouter, UploadFile, File
 import os
 import shutil
-import fitz  # PyMuPDF
+
+from app.services.pdf_service import extract_text_from_pdf
+from app.services.ai_service import extract_invoice_from_page
 
 router = APIRouter()
 
@@ -17,28 +19,33 @@ async def upload_document(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Open the PDF
-    doc = fitz.open(file_path)
+    result = extract_text_from_pdf(file_path)
 
-    if doc.needs_pass:
-        doc.close()
-        return {
-            "success": False,
-            "message": "This PDF is password-protected. Please upload an unlocked PDF."
-        }
+    if not result["success"]:
+        return result
 
-    page_count = doc.page_count
-    extracted_text = ""
+    all_invoices = []
 
-    for page_num in range(page_count):
-        page = doc.load_page(page_num)
-        extracted_text += page.get_text()
+    for page in result["page_texts"]:
 
-    doc.close()
+        print(f"Processing Page {page['page']}")
+
+        extracted = extract_invoice_from_page(page["text"])
+
+        if extracted.get("invoices"):
+
+            for invoice in extracted["invoices"]:
+
+                invoice["page"] = page["page"]
+
+                all_invoices.append(invoice)
+
     return {
         "success": True,
         "filename": file.filename,
-        "pages": page_count,
-        "text_length": len(extracted_text),
-        "preview": extracted_text[:500]
+        "pages": result["pages"],
+        "text_length": result["text_length"],
+        "preview": result["preview"],
+        "invoice_count": len(all_invoices),
+        "invoices": all_invoices
     }
