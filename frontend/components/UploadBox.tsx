@@ -25,6 +25,7 @@ interface UploadResult {
 export default function UploadBox() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState("");
@@ -39,6 +40,34 @@ export default function UploadBox() {
       setError("");
     }
   };
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  e.preventDefault();
+  setDragActive(true);
+};
+
+const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+  e.preventDefault();
+  setDragActive(false);
+};
+
+const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  e.preventDefault();
+  setDragActive(false);
+
+  const file = e.dataTransfer.files?.[0];
+
+  if (!file) return;
+
+  if (file.type !== "application/pdf") {
+    setError("Please upload a PDF file.");
+    return;
+  }
+
+  setSelectedFile(file);
+  setResult(null);
+  setError("");
+};
+
   const handleExcelExport = async () => {
   if (!result) return;
 
@@ -192,8 +221,46 @@ export default function UploadBox() {
       );
     }) ?? [];
 
+  const totalAmount = filteredInvoices.reduce((sum, invoice) => {
+    const amount = Number(invoice.amount.replace(/[^0-9.]/g, "")) || 0;
+    return sum + amount;
+  }, 0);
+
+  const uniqueDealers = new Set(
+    filteredInvoices
+      .map((invoice) => invoice.dealer.trim())
+      .filter(Boolean)
+  ).size;
+
+  const uniqueCustomers = new Set(
+    filteredInvoices
+      .map((invoice) => invoice.customer.trim())
+      .filter(Boolean)
+  ).size;
+    
+
   return (
     <section className="mx-auto mt-16 max-w-7xl px-6">
+
+    {loading && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div className="rounded-2xl bg-slate-900 p-10 text-center shadow-2xl">
+          <div className="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent"></div>
+
+          <h3 className="mt-6 text-2xl font-bold text-white">
+            🤖 AI is analyzing your document
+          </h3>
+
+          <p className="mt-3 text-slate-400">
+            Extracting invoices from your PDF...
+          </p>
+
+          <p className="mt-2 text-sm text-slate-500">
+            This may take a few seconds.
+          </p>
+        </div>
+      </div>
+    )}
 
       <div className="rounded-3xl border-2 border-dashed border-cyan-500 bg-slate-900 p-10">
 
@@ -205,7 +272,15 @@ export default function UploadBox() {
           Upload a PDF and extract invoice information using AI.
         </p>
 
-        <div className="mt-8 text-center">
+      <div
+        className={`mt-8 rounded-2xl border-2 border-dashed py-12 px-8 text-center transition-all
+          ${loading ? "pointer-events-none opacity-60" : ""}
+          ${dragActive ? "border-cyan-400 bg-cyan-900/20" : "border-slate-600"}
+        `}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
 
           <input
             id="pdf-upload"
@@ -221,6 +296,11 @@ export default function UploadBox() {
           >
             Choose PDF
           </label>
+
+          <p className="mt-4 text-sm text-slate-400">
+            Drag & drop a PDF here or click the button to browse.
+          </p>
+          
 
         </div>
 
@@ -347,50 +427,101 @@ export default function UploadBox() {
               </div>
 
             </div>
+            {/* Invoice Summary */}
+
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+
+        <div className="rounded-xl bg-slate-800 p-6 text-center shadow-lg">
+          <h4 className="text-lg font-semibold text-cyan-400">
+            📄 Invoices
+          </h4>
+
+          <p className="mt-3 text-4xl font-bold text-white">
+            {filteredInvoices.length}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-slate-800 p-6 text-center shadow-lg">
+          <h4 className="text-lg font-semibold text-green-400">
+            💰 Total Value
+          </h4>
+
+          <p className="mt-3 text-3xl font-bold text-white">
+            ₹ {totalAmount.toLocaleString("en-IN")}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-slate-800 p-6 text-center shadow-lg">
+          <h4 className="text-lg font-semibold text-yellow-400">
+            🏢 Dealers
+          </h4>
+
+          <p className="mt-3 text-4xl font-bold text-white">
+            {uniqueDealers}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-slate-800 p-6 text-center shadow-lg">
+          <h4 className="text-lg font-semibold text-purple-400">
+            👥 Customers
+          </h4>
+
+          <p className="mt-3 text-4xl font-bold text-white">
+            {uniqueCustomers}
+          </p>
+        </div>
+
+      </div>
                         {/* Invoice Table */}
 
             <div className="rounded-xl bg-slate-800 p-6">
 
-              <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="mb-6">
 
-                <h3 className="text-2xl font-bold text-green-400">
-                  📋 Extracted Invoices ({result.invoice_count})
-                </h3>
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-              <div className="flex gap-3">
+                  <h3 className="text-2xl font-bold text-green-400">
+                    📋 Extracted Invoices ({filteredInvoices.length} of {result.invoice_count})
+                  </h3>
 
-                <button
-                  onClick={handleExcelExport}
-                  disabled={exporting || loading}
-                  className="rounded-lg bg-emerald-600 px-5 py-2 font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
-                >
-                  {exporting ? "Exporting..." : "📊 Export Excel"}
-                  
-                </button>
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center">
 
-                <button
-                  onClick={handleCsvExport}
-                  disabled={exporting || loading}
-                  className="rounded-lg bg-blue-600 px-5 py-2 font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
-                >
-                  {exporting ? "Exporting..." : "📄 Export CSV"}
-                </button>
-                <input
-                  type="text"
-                  placeholder="🔍 Search invoices..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-2 text-white placeholder:text-slate-400 md:max-w-sm"
-                />
+                    <input
+                      type="text"
+                      placeholder="🔍 Search invoices..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-2 text-white placeholder:text-slate-400 md:w-80"
+                    />
+
+                    <button
+                      onClick={handleExcelExport}
+                      disabled={exporting || loading}
+                      className="rounded-lg bg-emerald-600 px-5 py-2 font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+                    >
+                      {exporting ? "Exporting..." : "📊 Excel"}
+                    </button>
+
+                    <button
+                      onClick={handleCsvExport}
+                      disabled={exporting || loading}
+                      className="rounded-lg bg-blue-600 px-5 py-2 font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
+                    >
+                      {exporting ? "Exporting..." : "📄 CSV"}
+                    </button>
+
+                  </div>
+
+                </div>
 
               </div>
-
-            </div>
 
               {filteredInvoices.length === 0 ? (
 
                 <div className="rounded-lg bg-slate-900 p-6 text-center text-slate-400">
-                  No invoices were detected.
+                  {searchTerm
+                    ? "No invoices match your search."
+                    : "No invoices were detected."}
                 </div>
 
               ) : (
@@ -441,7 +572,9 @@ export default function UploadBox() {
 
                         <tr
                           key={`${invoice.invoice_number}-${index}`}
-                          className="hover:bg-slate-700"
+                          className={`${
+                            index % 2 === 0 ? "bg-slate-800" : "bg-slate-900"
+                          } hover:bg-slate-700`}
                         >
 
                           <td className="border border-slate-700 px-4 py-3">
