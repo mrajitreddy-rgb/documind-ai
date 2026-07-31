@@ -2,6 +2,9 @@
 
 import SummaryCards from "@/components/dashboard/SummaryCards";
 import { useState } from "react";
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://documind-ai-production-cd85.up.railway.app";
 
 interface Invoice {
   invoice_number: string;
@@ -75,8 +78,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
   try {
     setExporting(true);
 
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/export/excel",
+    const response = await fetch(`${API}/api/export/excel`
       {
         method: "POST",
         headers: {
@@ -129,7 +131,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     formData.append("file", selectedFile);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/upload", {
+      const response = await fetch(`${API}/api/upload` {
         method: "POST",
         body: formData,
       });
@@ -164,8 +166,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     try {
       setExporting(true);
 
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/export/csv",
+      const response = await fetch(`${API}/api/export/csv`
         {
           method: "POST",
           headers: {
