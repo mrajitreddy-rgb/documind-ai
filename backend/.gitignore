@@ -14,5 +14,7 @@ uploads/
 # VS Code
 .vscode/
 
+exports/
+
 # macOS
 .DS_Store

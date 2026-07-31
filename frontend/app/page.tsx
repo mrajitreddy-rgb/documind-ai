@@ -1,12 +1,11 @@
-import Navbar from "@/components/Navbar";
 import UploadBox from "@/components/UploadBox";
 
 export default function Home() {
   return (
     <>
-      <Navbar />
+      
 
-      <main className="min-h-screen bg-slate-950 text-white">
+      <main className="bg-slate-950 text-white">
         {/* Hero Section */}
         <section className="mx-auto flex max-w-6xl flex-col items-center justify-center px-6 py-24 text-center">
           <h1 className="text-6xl font-extrabold">

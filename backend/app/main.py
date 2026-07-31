@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.upload import router as upload_router
 from app.routes.export import router as export_router
+from app.database import Base, engine
+from app.models import Upload, Invoice
+from app.routes.history import router as history_router
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="DocuMind AI API",
@@ -48,4 +53,10 @@ app.include_router(
     export_router,
     prefix="/api/export",
     tags=["Export"]
+)
+
+app.include_router(
+    history_router,
+    prefix="/api",
+    tags=["History"]
 )
