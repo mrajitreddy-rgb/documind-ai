@@ -16,6 +16,7 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",
+    "https://documind-ai-one-flame.vercel.app",
 ]
 
 app.add_middleware(
