@@ -78,8 +78,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
   try {
     setExporting(true);
 
-    const response = await fetch(`${API}/api/export/excel`
-      {
+    const response = await fetch(`${API}/api/export/excel`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -131,7 +130,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     formData.append("file", selectedFile);
 
     try {
-      const response = await fetch(`${API}/api/upload` {
+      const response = await fetch(`${API}/api/upload`, {
         method: "POST",
         body: formData,
       });
@@ -166,8 +165,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     try {
       setExporting(true);
 
-      const response = await fetch(`${API}/api/export/csv`
-        {
+      const response = await fetch(`${API}/api/export/csv`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
