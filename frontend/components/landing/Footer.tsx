@@ -1,27 +1,68 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950">
 
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-16">
 
         <div className="grid gap-12 md:grid-cols-4">
 
-          {/* Logo */}
+          {/* Brand */}
 
           <div>
 
-            <h2 className="text-3xl font-bold text-white">
-              DocuMind
+            <Link
+              href="/"
+              className="text-3xl font-extrabold"
+            >
+              <span className="text-white">DocuMind</span>
               <span className="text-cyan-400"> AI</span>
-            </h2>
+            </Link>
 
-            <p className="mt-5 leading-7 text-slate-400">
+            <p className="mt-5 text-slate-400 leading-7">
               AI-powered invoice extraction that converts PDF invoices into
-              structured Excel and CSV reports in seconds.
+              structured Excel and CSV files in seconds.
             </p>
+
+          </div>
+
+          {/* Quick Links */}
+
+          <div>
+
+            <h3 className="mb-5 text-lg font-semibold text-white">
+              Quick Links
+            </h3>
+
+            <ul className="space-y-3 text-slate-400">
+
+              <li>
+                <Link href="/">
+                  Home
+                </Link>
+              </li>
+
+              <li>
+                <a href="#features">
+                  Features
+                </a>
+              </li>
+
+              <li>
+                <a href="#pricing">
+                  Pricing
+                </a>
+              </li>
+
+              <li>
+                <Link href="/contact">
+                  Contact
+                </Link>
+              </li>
+
+            </ul>
 
           </div>
 
@@ -29,33 +70,21 @@ export default function Footer() {
 
           <div>
 
-            <h3 className="text-xl font-bold text-white">
+            <h3 className="mb-5 text-lg font-semibold text-white">
               Product
             </h3>
 
-            <ul className="mt-5 space-y-3">
+            <ul className="space-y-3 text-slate-400">
 
               <li>
-                <Link href="#features" className="text-slate-400 hover:text-cyan-400">
-                  Features
+                <Link href="/dashboard">
+                  Dashboard
                 </Link>
               </li>
 
               <li>
-                <Link href="#pricing" className="text-slate-400 hover:text-cyan-400">
-                  Pricing
-                </Link>
-              </li>
-
-              <li>
-                <Link href="#faq" className="text-slate-400 hover:text-cyan-400">
-                  FAQ
-                </Link>
-              </li>
-
-              <li>
-                <Link href="#upload" className="text-slate-400 hover:text-cyan-400">
-                  Upload Demo
+                <Link href="/history">
+                  Upload History
                 </Link>
               </li>
 
@@ -63,103 +92,71 @@ export default function Footer() {
 
           </div>
 
-          {/* Company */}
+          {/* Legal */}
 
           <div>
 
-            <h3 className="text-xl font-bold text-white">
-              Company
+            <h3 className="mb-5 text-lg font-semibold text-white">
+              Legal
             </h3>
 
-            <ul className="mt-5 space-y-3">
+            <ul className="space-y-3 text-slate-400">
 
               <li>
-                <a href="#" className="text-slate-400 hover:text-cyan-400">
-                  About
-                </a>
-              </li>
-
-              <li>
-                <a href="#" className="text-slate-400 hover:text-cyan-400">
-                  Contact
-                </a>
-              </li>
-
-              <li>
-                <a href="#" className="text-slate-400 hover:text-cyan-400">
+                <Link href="/privacy">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a href="#" className="text-slate-400 hover:text-cyan-400">
-                  Terms
-                </a>
+                <Link href="/terms">
+                  Terms & Conditions
+                </Link>
+              </li>
+
+              <li>
+                <Link href="/refund">
+                  Refund Policy
+                </Link>
               </li>
 
             </ul>
-
-          </div>
-
-          {/* Contact */}
-
-          <div>
-
-            <h3 className="text-xl font-bold text-white">
-              Contact
-            </h3>
-
-            <div className="mt-5 space-y-5">
-
-              <div className="flex items-center gap-3">
-
-                <Mail className="h-5 w-5 text-cyan-400" />
-
-                <span className="text-slate-400">
-                  Mr.AjitReddy@Gmail.com
-                </span>
-
-              </div>
-
-              <div className="flex items-center gap-3">
-
-                <Phone className="h-5 w-5 text-cyan-400" />
-
-                <span className="text-slate-400">
-                  +91 8328364393
-                </span>
-
-              </div>
-
-              <div className="flex items-start gap-3">
-
-                <MapPin className="mt-1 h-5 w-5 text-cyan-400" />
-
-                <span className="text-slate-400">
-                  Hyderabad, India
-                </span>
-
-              </div>
-
-            </div>
 
           </div>
 
         </div>
 
-      </div>
+        {/* Contact */}
 
-      <div className="border-t border-slate-800">
+        <div className="mt-16 border-t border-slate-800 pt-8">
 
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 text-sm text-slate-500 md:flex-row">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
 
-          <span>
-            © 2026 DocuMind AI. All rights reserved.
-          </span>
+            <div className="space-y-3">
 
-          <span>
-            Built with Next.js • FastAPI • Gemini AI
-          </span>
+              <div className="flex items-center gap-3 text-slate-400">
+                <Mail size={18} />
+                <span>Mr.AjitReddy@gmail.com</span>
+              </div>
+
+              <div className="flex items-center gap-3 text-slate-400">
+                <MapPin size={18} />
+                <span>India</span>
+              </div>
+
+            </div>
+
+            <div className="text-sm text-slate-500">
+
+              © 2026 DocuMind AI. All rights reserved.
+
+              <div className="mt-2">
+                Built with ❤️ in India
+              </div>
+
+            </div>
+
+          </div>
 
         </div>
 
