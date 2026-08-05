@@ -1,5 +1,8 @@
 "use client";
 
+import PdfInfoCard from "@/components/dashboard/PdfInfoCard";
+import ModernUploadArea from "@/components/dashboard/ModernUploadArea";
+import LoadingOverlay from "@/components/dashboard/LoadingOverlay";
 import SummaryCards from "@/components/dashboard/SummaryCards";
 import { useState } from "react";
 const API =
@@ -240,151 +243,36 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     
 
   return (
-    <section className="mx-auto mt-16 max-w-7xl px-6">
+    <section
+      id="upload"
+      className="mx-auto mt-16 max-w-7xl px-6"
+    >
 
-    {loading && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-        <div className="rounded-2xl bg-slate-900 p-10 text-center shadow-2xl">
-          <div className="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent"></div>
+    <LoadingOverlay loading={loading} />
 
-          <h3 className="mt-6 text-2xl font-bold text-white">
-            🤖 AI is analyzing your document
-          </h3>
-
-          <p className="mt-3 text-slate-400">
-            Extracting invoices from your PDF...
-          </p>
-
-          <p className="mt-2 text-sm text-slate-500">
-            This may take a few seconds.
-          </p>
-        </div>
-      </div>
-    )}
-
-      <div className="rounded-3xl border-2 border-dashed border-cyan-500 bg-slate-900 p-10">
-
-        <h2 className="text-center text-3xl font-bold text-white">
-          Upload Your Document
-        </h2>
-
-        <p className="mt-3 text-center text-slate-400">
-          Upload a PDF and extract invoice information using AI.
-        </p>
-
-      <div
-        className={`mt-8 rounded-2xl border-2 border-dashed py-12 px-8 text-center transition-all
-          ${loading ? "pointer-events-none opacity-60" : ""}
-          ${dragActive ? "border-cyan-400 bg-cyan-900/20" : "border-slate-600"}
-        `}
+      <ModernUploadArea
+        loading={loading}
+        dragActive={dragActive}
+        selectedFile={selectedFile}
+        error={error}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-      >
-
-          <input
-            id="pdf-upload"
-            type="file"
-            accept=".pdf"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-
-          <label
-            htmlFor="pdf-upload"
-            className="cursor-pointer rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-black hover:bg-cyan-400"
-          >
-            Choose PDF
-          </label>
-
-          <p className="mt-4 text-sm text-slate-400">
-            Drag & drop a PDF here or click the button to browse.
-          </p>
-          
-
-        </div>
-
-        {selectedFile && (
-
-          <div className="mt-6 text-center">
-
-            <p className="text-green-400">
-              Selected File
-            </p>
-
-            <p className="mt-2 text-white">
-              {selectedFile.name}
-            </p>
-
-            <button
-              onClick={handleUpload}
-              disabled={loading}
-              className="mt-6 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-500 disabled:opacity-50"
-            >
-              {loading ? "Analyzing PDF..." : "Analyze Document"}
-            </button>
-
-          </div>
-
-        )}
-
-        {error && (
-
-          <div className="mt-8 rounded-lg bg-red-900 p-4 text-red-200">
-            {error}
-          </div>
-
-        )}
+        onFileChange={handleFileChange}
+        onUpload={handleUpload}
+      />
 
         {result && (
 
           <div className="mt-10 space-y-8">
 
-            {/* PDF Information */}
-
-            <div className="rounded-xl bg-slate-800 p-6">
-
-              <h3 className="mb-4 text-2xl font-bold text-cyan-400">
-                📄 PDF Information
-              </h3>
-
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-
-                <div>
-                  <span className="font-bold text-white">
-                    Filename
-                  </span>
-
-                  <p className="text-slate-300">
-                    {result.filename}
-                  </p>
-                </div>
-
-                <div>
-                  <span className="font-bold text-white">
-                    Characters
-                  </span>
-
-                  <p className="text-slate-300">
-                    {result.text_length.toLocaleString()}
-                  </p>
-                </div>
-
-              </div>
-
-              <div className="mt-6">
-
-                <span className="font-bold text-white">
-                  Preview
-                </span>
-
-                <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap rounded-lg bg-slate-950 p-4 text-sm text-green-300">
-                  {result.preview}
-                </pre>
-
-              </div>
-
-            </div>
+            <PdfInfoCard
+              filename={result.filename}
+              pages={result.pages}
+              textLength={result.text_length}
+              preview={result.preview}
+            />
+            
 
             {/* Statistics */}
 
@@ -587,7 +475,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
 
         )}
 
-      </div>
+      
 
     </section>
   );
