@@ -64,27 +64,31 @@ export default function ModernUploadArea({
         </p>
       </div>
 
-      {selectedFile && (
-        <div className="mt-8 rounded-2xl border border-slate-700 bg-slate-950 p-6">
+        {selectedFile && (
+            <div className="mt-8 rounded-2xl border border-slate-700 bg-slate-950 p-6">
 
-          <div className="text-green-400 font-semibold">
-            Selected File
-          </div>
+                <div className="flex flex-col items-center">
 
-          <div className="mt-2 text-white">
-            {selectedFile.name}
-          </div>
+                <div className="text-green-400 font-semibold text-lg">
+                    Selected File
+                </div>
 
-          <button
-            onClick={onUpload}
-            disabled={loading}
-            className="mt-6 rounded-xl bg-green-600 px-8 py-3 font-semibold text-white transition hover:bg-green-500 disabled:opacity-50"
-          >
-            {loading ? "Analyzing..." : "Analyze Document"}
-          </button>
+                <div className="mt-3 max-w-xl truncate text-center text-white">
+                    {selectedFile.name}
+                </div>
 
-        </div>
-      )}
+                <button
+                    onClick={onUpload}
+                    disabled={loading}
+                    className="mt-6 w-64 rounded-xl bg-green-600 py-3 font-semibold text-white transition hover:bg-green-500 disabled:opacity-50"
+                >
+                    {loading ? "Analyzing..." : "Analyze Document"}
+                </button>
+
+                </div>
+
+            </div>
+        )}
 
       {error && (
         <div className="mt-8 rounded-xl bg-red-900/40 p-4 text-red-300">

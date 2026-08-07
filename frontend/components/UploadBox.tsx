@@ -4,7 +4,7 @@ import PdfInfoCard from "@/components/dashboard/PdfInfoCard";
 import ModernUploadArea from "@/components/dashboard/ModernUploadArea";
 import LoadingOverlay from "@/components/dashboard/LoadingOverlay";
 import SummaryCards from "@/components/dashboard/SummaryCards";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "http://127.0.0.1:8000";
@@ -37,6 +37,7 @@ export default function UploadBox() {
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -210,9 +211,26 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
       setExporting(false);
     }
   };
+  
+
+  useEffect(() => {
+    if (result) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 200);
+    }
+  }, [result]);
+
+
+
   const filteredInvoices =
     result?.invoices.filter((invoice) => {
       const search = searchTerm.toLowerCase();
+
+      
 
       return (
         invoice.invoice_number.toLowerCase().includes(search) ||
@@ -264,7 +282,10 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
 
         {result && (
 
-          <div className="mt-10 space-y-8">
+          <div
+            ref={resultsRef}
+            className="mt-10 space-y-8"
+          >
 
             <PdfInfoCard
               filename={result.filename}
