@@ -15,7 +15,7 @@ export default function ContactPage() {
 
           <div>
             <strong>Email:</strong><br />
-            support@documindai.com
+            Mr.AjitReddy@Gmail.com
           </div>
 
           <div>

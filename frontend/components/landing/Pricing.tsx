@@ -1,52 +1,20 @@
-import { Check, Star } from "lucide-react";
+"use client";
 
-const plans = [
-  {
-    name: "Starter",
-    price: "$29",
-    period: "/month",
-    description: "Perfect for freelancers and small businesses.",
-    featured: false,
-    button: "Start Free Trial",
-    features: [
-      "Up to 500 invoices / month",
-      "AI Invoice Extraction",
-      "Excel Export",
-      "CSV Export",
-      "Email Support",
-    ],
-  },
-  {
-    name: "Professional",
-    price: "$99",
-    period: "/month",
-    description: "Best for growing businesses and finance teams.",
-    featured: true,
-    button: "Get Started",
-    features: [
-      "Unlimited invoices",
-      "Multi-page PDF Processing",
-      "Invoice Search",
-      "Upload History",
-      "Priority Support",
-      "Future Updates Included",
-    ],
-  },
-  {
-    name: "Founder's Lifetime",
-    price: "$499",
-    period: "one-time",
-    description: "Limited launch offer for early adopters.",
-    featured: false,
-    button: "Contact Sales",
-    features: [
-      "Lifetime Software Access",
-      "12 Months Updates",
-      "Priority Support",
-      "Commercial Usage",
-      "Limited Early Adopter Offer",
-    ],
-  },
+import { Check, Star, ShieldCheck, Zap, Mail } from "lucide-react";
+import Link from "next/link";
+import { startPayment } from "@/services/lib/payment";
+
+const features = [
+  "Unlimited PDF Uploads",
+  "Unlimited Invoice Extraction",
+  "AI Invoice Processing",
+  "Excel Export",
+  "CSV Export",
+  "Upload History",
+  "Commercial Usage",
+  "Priority Email Support",
+  "12 Months of Free Updates",
+  "Future AI Improvements",
 ];
 
 export default function Pricing() {
@@ -55,105 +23,208 @@ export default function Pricing() {
       id="pricing"
       className="mx-auto max-w-7xl px-6 py-28"
     >
+      {/* Header */}
+
       <div className="text-center">
-        <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
-          Pricing
+
+        <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2 text-sm font-bold text-cyan-300">
+          🚀 LIMITED-TIME LAUNCH OFFER
         </span>
 
-        <h2 className="mt-6 text-5xl font-extrabold text-white">
-          Simple & Transparent Pricing
+        <h2 className="mt-8 text-5xl font-extrabold text-white">
+          Automate Invoice Processing Forever.
+          <br />
+          One Payment. Lifetime Access.
         </h2>
 
-        <p className="mx-auto mt-6 max-w-3xl text-xl text-slate-400">
-          Choose the plan that fits your business today.
-          Upgrade anytime as your invoice volume grows.
+        <p className="mx-auto mt-8 max-w-3xl text-xl leading-8 text-slate-400">
+          Stop manually typing invoice data into Excel.
+          Upload PDF invoices and let AI extract invoice data
+          in seconds.
         </p>
+
       </div>
 
-      <div className="mt-20 grid gap-8 lg:grid-cols-3">
+      {/* Pricing Card */}
 
-        {plans.map((plan) => (
-          <div
-            key={plan.name}
-            className={`relative rounded-3xl border p-8 transition-all duration-300 hover:-translate-y-2 ${
-              plan.featured
-                ? "border-cyan-500 bg-slate-900 shadow-2xl shadow-cyan-500/20"
-                : "border-slate-800 bg-slate-900"
-            }`}
-          >
-            {plan.featured && (
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-cyan-500 px-5 py-2 text-sm font-bold text-slate-950">
-                <div className="flex items-center gap-2">
-                  <Star size={16} />
-                  Most Popular
-                </div>
-              </div>
-            )}
+      <div className="mx-auto mt-20 max-w-2xl">
 
-            <h3 className="text-3xl font-bold text-white">
-              {plan.name}
-            </h3>
+        <div className="relative rounded-3xl border border-cyan-500 bg-slate-900 p-10 shadow-2xl shadow-cyan-500/20">
 
-            <p className="mt-4 text-slate-400">
-              {plan.description}
-            </p>
+          {/* Badge */}
 
-            <div className="mt-8 flex items-end gap-2">
-              <span className="text-6xl font-extrabold text-white">
-                {plan.price}
-              </span>
+          <div className="absolute -top-5 left-1/2 -translate-x-1/2 rounded-full bg-cyan-500 px-6 py-2 font-bold text-slate-950">
 
-              <span className="pb-2 text-slate-400">
-                {plan.period}
-              </span>
+            <div className="flex items-center gap-2">
+              <Star size={16} />
+              Best Value
             </div>
 
-            <ul className="mt-10 space-y-4">
+          </div>
 
-              {plan.features.map((feature) => (
-                <li
-                  key={feature}
-                  className="flex items-center gap-3"
-                >
-                  <Check className="h-5 w-5 text-cyan-400" />
+          <h3 className="text-center text-4xl font-bold text-white">
+            Lifetime Launch License
+          </h3>
 
-                  <span className="text-slate-300">
-                    {feature}
-                  </span>
-                </li>
-              ))}
+          <p className="mt-4 text-center text-slate-400">
+            One-time payment • Lifetime access
+          </p>
 
-            </ul>
+          {/* Prices */}
 
-            <button
-              className={`mt-10 w-full rounded-xl py-4 text-lg font-bold transition ${
-                plan.featured
-                  ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400"
-                  : "border border-slate-700 text-white hover:border-cyan-500 hover:bg-slate-800"
-              }`}
-            >
-              {plan.button}
-            </button>
+          <div className="mt-10 rounded-2xl bg-slate-950 p-8">
+
+            {/* International */}
+
+            <div className="text-center">
+
+              <p className="text-lg text-slate-400">
+                🌍 International
+              </p>
+
+              <p className="mt-3 text-2xl text-slate-500 line-through">
+                US$299
+              </p>
+
+              <p className="text-6xl font-extrabold text-cyan-400">
+                US$149
+              </p>
+
+            </div>
+
+            <div className="my-10 border-t border-slate-800"></div>
+
+            {/* India */}
+
+            <div className="text-center">
+
+              <p className="text-lg text-slate-400">
+                🇮🇳 India
+              </p>
+
+              <p className="mt-3 text-2xl text-slate-500 line-through">
+                ₹9,999
+              </p>
+
+              <p className="text-6xl font-extrabold text-cyan-400">
+                ₹4,999
+              </p>
+
+            </div>
 
           </div>
-        ))}
+
+          {/* Features */}
+
+          <ul className="mt-12 space-y-5">
+
+            {features.map((feature) => (
+              <li
+                key={feature}
+                className="flex items-center gap-3"
+              >
+                <Check className="h-5 w-5 text-cyan-400" />
+
+                <span className="text-lg text-slate-300">
+                  {feature}
+                </span>
+
+              </li>
+            ))}
+
+          </ul>
+
+          {/* CTA */}
+
+          <div className="mt-12 grid gap-4 md:grid-cols-2">
+
+            <button
+                onClick={() => startPayment("international")}
+                className="rounded-xl bg-cyan-500 py-5 text-center text-xl font-bold text-slate-950 transition duration-300 hover:scale-[1.02] hover:bg-cyan-400"
+            >
+                🌍 Pay US$149
+            </button>
+
+            <button
+                onClick={() => startPayment("india")}
+                className="rounded-xl border border-cyan-500 py-5 text-center text-xl font-bold text-cyan-400 transition duration-300 hover:bg-cyan-500 hover:text-slate-950"
+            >
+                🇮🇳 Pay ₹4,999
+            </button>
+
+            </div>
+
+          {/* Trust Box */}
+
+          <div className="mt-8 rounded-xl border border-slate-800 bg-slate-950/70 p-6">
+
+            <div className="space-y-3 text-center text-slate-300">
+
+              <div className="flex items-center justify-center gap-2">
+                <ShieldCheck size={18} className="text-cyan-400" />
+                Secure checkout with Razorpay
+              </div>
+
+              <div className="flex items-center justify-center gap-2">
+                <Zap size={18} className="text-cyan-400" />
+                Instant access after successful payment
+              </div>
+
+              <div className="flex items-center justify-center gap-2">
+                <Mail size={18} className="text-cyan-400" />
+                Priority email support included
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Footer Note */}
+
+          <p className="mt-8 text-center text-sm leading-7 text-slate-400">
+            🌍 International customers:
+            <strong> US$149</strong>
+
+            <br />
+
+            🇮🇳 Indian customers:
+            <strong> ₹4,999</strong> via Razorpay
+
+            <br />
+
+            <span className="font-semibold text-cyan-300">
+              Limited-time launch pricing.
+            </span>
+
+          </p>
+
+        </div>
 
       </div>
 
-      <div className="mt-16 text-center">
+      {/* Enterprise */}
 
-        <p className="text-slate-400">
-          Need a custom solution for your organization?
+      <div className="mt-24 text-center">
+
+        <h3 className="text-3xl font-bold text-white">
+          Need Enterprise Licensing?
+        </h3>
+
+        <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-400">
+          Looking to deploy DocuMind AI across your organization?
+          Contact us for custom enterprise pricing,
+          onboarding, and priority support.
         </p>
 
-        <a
-          href="mailto:Mr.AjitReddy@Gmail.com"
-          className="mt-4 inline-block text-lg font-semibold text-cyan-400 hover:text-cyan-300"
+        <Link
+          href="/contact"
+          className="mt-8 inline-block rounded-xl border border-cyan-500 px-8 py-4 text-lg font-semibold text-cyan-400 transition hover:bg-cyan-500 hover:text-slate-950"
         >
-          Contact Sales →
-        </a>
+          Contact Sales
+        </Link>
 
       </div>
+
     </section>
   );
 }

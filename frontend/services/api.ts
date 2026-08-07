@@ -51,3 +51,53 @@ export async function deleteUpload(id: number) {
 
   return response.json();
 }
+
+// ======================================
+// Razorpay Payments
+// ======================================
+
+export async function createPaymentOrder(
+  plan: "india" | "international"
+) {
+  const response = await fetch(
+    `${API_URL}/payments/create-order`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ plan }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Unable to create payment order.");
+  }
+
+  return response.json();
+}
+
+export async function verifyPayment(
+  paymentData: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  }
+) {
+  const response = await fetch(
+    `${API_URL}/payments/verify`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(paymentData),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Payment verification failed.");
+  }
+
+  return response.json();
+}

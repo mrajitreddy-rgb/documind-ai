@@ -4,8 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes.upload import router as upload_router
 from app.routes.export import router as export_router
 from app.database import Base, engine
-from app.models import Upload, Invoice
+from app.models import Upload, Invoice, Payment
 from app.routes.history import router as history_router
+from app.routes.payments import router as payments_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -48,6 +49,7 @@ app.include_router(
     prefix="/api",
     tags=["Upload"]
 )
+app.include_router(payments_router)
 
 # Export API
 app.include_router(
