@@ -7,7 +7,7 @@ import SummaryCards from "@/components/dashboard/SummaryCards";
 import { useState } from "react";
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://documind-ai-production-cd85.up.railway.app";
+  "http://127.0.0.1:8000";
 
 interface Invoice {
   invoice_number: string;

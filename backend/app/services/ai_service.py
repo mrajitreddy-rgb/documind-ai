@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from google import genai
 
+
 # -------------------------------------------------------
 # Load Environment Variables
 # -------------------------------------------------------
@@ -170,8 +171,12 @@ PDF Text:
 
     try:
 
+        MODEL_NAME = "gemini-3.5-flash-lite"
+
+        
+
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=MODEL_NAME,
             contents=prompt,
         )
 

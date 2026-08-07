@@ -18,4 +18,5 @@ exports/
 
 # macOS
 .DS_Store
+
 documind.db
