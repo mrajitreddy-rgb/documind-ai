@@ -45,10 +45,16 @@ def create_payment_order(request: CreateOrderRequest):
             detail="Invalid pricing plan",
         )
 
-    order = create_order(
-        amount=amount,
-        currency=currency,
-    )
+    try:
+        order = create_order(
+            amount=amount,
+            currency=currency,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        )
 
     return {
         "success": True,
