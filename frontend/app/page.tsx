@@ -1,4 +1,5 @@
 import Hero from "@/components/landing/Hero";
+import Demo from "@/components/landing/Demo";
 import Features from "@/components/landing/Features";
 import HowItWorks from "@/components/landing/HowItWorks";
 import SocialProof from "@/components/landing/SocialProof";
@@ -11,25 +12,25 @@ import CTA from "@/components/landing/CTA";
 export default function Home() {
   return (
     <>
-      
-
       <main className="bg-slate-950 text-white">
-        
         <Navbar />
-        
+
         <Hero />
+
+        <Demo />
 
         <Features />
 
         <HowItWorks />
 
-        
-
         <SocialProof />
 
         <Pricing />
+
         <FAQ />
+
         <CTA />
+
         <Footer />
       </main>
     </>
