@@ -14,11 +14,11 @@ export default function LoadingOverlay({
         <div className="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent" />
 
         <h2 className="mt-8 text-center text-2xl font-bold text-white">
-          AI is analyzing your document...
+          Processing your document...
         </h2>
 
         <p className="mt-4 text-center text-slate-400">
-          Please wait while Gemini extracts invoice information.
+          DocuMind AI is extracting and organizing your invoice information.
         </p>
 
       </div>
