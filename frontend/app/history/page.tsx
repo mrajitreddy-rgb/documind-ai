@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+
 import UploadHistoryTable from "@/components/history/UploadHistoryTable";
 import { useUploadHistory } from "@/hooks/useUploadHistory";
 
@@ -22,8 +23,18 @@ export default function HistoryPage() {
   return (
     <div className="mx-auto max-w-7xl p-8">
 
-      <div className="mb-8 flex items-center justify-between">
+      {/* Navigation */}
+      <div className="mb-6">
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-slate-200 transition hover:bg-slate-700"
+        >
+          ← Back to Dashboard
+        </button>
+      </div>
 
+      {/* Page header */}
+      <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold text-white">
             Upload History
@@ -40,15 +51,16 @@ export default function HistoryPage() {
         >
           Refresh
         </button>
-
       </div>
 
+      {/* Error */}
       {error && (
         <div className="mb-6 rounded-xl border border-red-700 bg-red-900/30 p-4 text-red-300">
           {error}
         </div>
       )}
 
+      {/* History table */}
       <UploadHistoryTable
         uploads={uploads}
         loading={loading}

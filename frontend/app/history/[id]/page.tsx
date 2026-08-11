@@ -96,11 +96,11 @@ export default function UploadDetailsPage() {
       <div className="mx-auto max-w-5xl p-10">
 
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push("/history") }
           className="mb-8 flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 hover:bg-slate-700"
         >
           <ArrowLeft size={18} />
-          Back
+          Back to Upload History
         </button>
 
         <div className="rounded-xl border border-red-600 bg-red-900/20 p-6 text-red-300">
@@ -117,11 +117,11 @@ export default function UploadDetailsPage() {
       <div className="mb-8 flex items-center justify-between">
 
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push("/history") }
           className="flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 hover:bg-slate-700"
         >
           <ArrowLeft size={18} />
-          Back
+          Back to Upload History
         </button>
 
       </div>
