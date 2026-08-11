@@ -139,6 +139,16 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         body: formData,
       });
 
+      // Gemini retry happens inside the backend, batch by batch.
+      // If the HTTP layer itself returns a transient error, show
+      // a customer-friendly message without exposing provider details.
+      if (response.status === 429 || response.status === 503) {
+        throw new Error(
+          "AI is temporarily busy. Your document is safe. " +
+          "Please wait a moment and try again."
+        );
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -147,7 +157,25 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
 
       if (!data.success) {
         setResult(null);
-        setError(data.error || "Analysis failed.");
+
+        const message = data.error || "Analysis failed.";
+        const lowerMessage = message.toLowerCase();
+
+        if (
+          lowerMessage.includes("temporarily busy") ||
+          lowerMessage.includes("rate-limited") ||
+          lowerMessage.includes("rate limited") ||
+          lowerMessage.includes("temporarily unavailable")
+        ) {
+          setError(
+            "AI is temporarily busy. Your document is safe. " +
+            "The server already retried the AI request. " +
+            "Please wait a moment and try again."
+          );
+        } else {
+          setError(message);
+        }
+
         return;
       }
 
@@ -266,6 +294,8 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
       className="mx-auto mt-16 max-w-7xl px-6"
     >
 
+    {/* Loading stays active while the backend retries temporary
+        Gemini 429/503 errors with exponential backoff. */}
     <LoadingOverlay loading={loading} />
 
       <ModernUploadArea
