@@ -204,24 +204,84 @@ export default function Pricing() {
 
       {/* Enterprise */}
 
+      {/* Enterprise */}
+
       <div className="mt-24 text-center">
 
-        <h3 className="text-3xl font-bold text-white">
-          Need Enterprise Licensing?
-        </h3>
+        <div className="mx-auto max-w-4xl rounded-3xl border border-cyan-500/30 bg-slate-900/70 p-10 shadow-xl">
 
-        <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-400">
-          Looking to deploy DocuMind AI across your organization?
-          Contact us for custom enterprise pricing,
-          onboarding, and priority support.
-        </p>
+          <span className="inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2 text-sm font-bold text-cyan-300">
+            HIGH-VOLUME PROCESSING
+          </span>
 
-        <Link
-          href="/contact"
-          className="mt-8 inline-block rounded-xl border border-cyan-500 px-8 py-4 text-lg font-semibold text-cyan-400 transition hover:bg-cyan-500 hover:text-slate-950"
-        >
-          Contact Sales
-        </Link>
+          <h3 className="mt-6 text-4xl font-extrabold text-white">
+            Processing Thousands of Invoices?
+          </h3>
+
+          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-400">
+            DocuMind AI can be configured for businesses processing
+            large volumes of invoice and document PDFs.
+            Get a custom plan based on your document volume,
+            processing requirements, and workflow.
+          </p>
+
+          <div className="mx-auto mt-8 grid max-w-3xl gap-4 text-left md:grid-cols-2">
+
+            <div className="rounded-xl bg-slate-950 p-5">
+              <div className="font-semibold text-white">
+               ✓ High-volume document processing
+              </div>
+              <p className="mt-2 text-sm text-slate-400">
+                Process large batches of invoice PDFs efficiently.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-slate-950 p-5">
+             <div className="font-semibold text-white">
+                ✓ Volume-based processing
+              </div>
+              <p className="mt-2 text-sm text-slate-400">
+                Plans designed around your document volume.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-slate-950 p-5">
+              <div className="font-semibold text-white">
+                ✓ Priority support
+              </div>
+              <p className="mt-2 text-sm text-slate-400">
+                Faster assistance for business deployments.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-slate-950 p-5">
+              <div className="font-semibold text-white">
+                ✓ Custom workflows
+              </div>
+              <p className="mt-2 text-sm text-slate-400">
+                Discuss your specific extraction and data requirements.
+              </p>
+            </div>
+
+          </div>
+
+          <p className="mt-8 text-xl font-semibold text-cyan-300">
+            Custom pricing based on volume and requirements
+          </p>
+
+          <p className="mt-3 text-slate-400">
+            Want to evaluate DocuMind first? Send us a sample batch
+            and we'll demonstrate the extraction results.
+          </p>
+
+          <Link
+            href="/contact"
+            className="mt-8 inline-block rounded-xl bg-cyan-500 px-10 py-4 text-lg font-bold text-slate-950 transition hover:scale-[1.02] hover:bg-cyan-400"
+          >
+            Request an Enterprise Demo
+          </Link>
+
+        </div>
 
       </div>
 
